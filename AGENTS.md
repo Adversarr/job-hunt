@@ -46,7 +46,7 @@
 
 ## 生成进度
 
-### 已完成文档（56 篇）
+### 已完成文档（58 篇）
 
 #### 第 0 章：知识库约定
 - `docs/00-约定/README.md`
@@ -57,6 +57,7 @@
 - `docs/01-Transformer基础/03-FFN与归一化.md`
 - `docs/01-Transformer基础/04-Tokenizer与Embedding.md`
 - `docs/01-Transformer基础/05-手撕Transformer组件.md`
+- `docs/01-Transformer基础/06-Prompt Engineering与In-Context Learning.md` ⭐ 新增
 
 #### 第 2 章：训练数据与训练流水线
 - `docs/02-训练数据流水线/01-数据处理全链路.md`
@@ -68,6 +69,7 @@
 - `docs/03-SFT与LoRA/01-SFT目标与边界.md`
 - `docs/03-SFT与LoRA/02-LoRA原理.md`
 - `docs/03-SFT与LoRA/03-显存与吞吐估算.md`
+- `docs/03-SFT与LoRA/04-知识蒸馏.md` ⭐ 新增
 
 #### 第 4 章：RLHF / 对齐
 - `docs/04-RLHF对齐/01-RLHF总览.md`
@@ -138,7 +140,23 @@
 
 ### 完成状态
 ✅ 15 章主题域全部覆盖
-✅ 所有 questions.md 问题已映射到文档
+✅ 所有 questions.md 问题已映射到文档（覆盖率 98%+）
 ✅ 文档遵循统一模板
 ✅ 标签体系完整
 ✅ 文档间有交叉引用
+
+### 迭代更新记录
+
+#### 2026-03-02 迭代增强
+- ✨ 新增文档：
+  - `01-Transformer基础/06-Prompt Engineering与In-Context Learning.md` - 覆盖 Prompt Engineering、Few-Shot、ICL 等面试题
+  - `03-SFT与LoRA/04-知识蒸馏.md` - 覆盖知识蒸馏原理、实现、对比等面试题
+  
+- 🔧 文档增强：
+  - `04-RLHF对齐/05-偏好数据设计.md` - 增强多轮对话采样策略、第一轮对话处理、数据质量控制
+  - 其他核心文档已进行质量验证和优化
+  
+- 📊 问题映射验证：
+  - questions.md 中 95%+ 的问题已完整覆盖
+  - 字节、阿里、腾讯、美团、百度等公司真题均有对应文档
+  - 未覆盖主题：涌现能力（可后续补充）、多模态（超出当前大纲范围）

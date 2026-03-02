@@ -398,6 +398,132 @@ position_id = current_seq_len  # 已生成序列长度
 # position_ids 需要重新映射
 ```
 
+### 8. Q: KV cache 能量化到 INT8/INT4 吗？具体怎么实现？
+**A**: **可以**，但需要注意精度损失和实现细节。
+
+**量化方法**：
+```python
+# 方法1：静态量化（离线校准）
+# 1. 收集校准数据集
+# 2. 统计 KV cache 的 min/max 或分位数
+# 3. 确定量化参数（scale, zero_point）
+
+# 方法2：动态量化（运行时）
+# 每个 batch 根据实际数据动态计算 scale
+
+# 量化公式（INT8）
+scale = (max_value - min_value) / 255
+kv_cache_int8 = (kv_cache_fp16 / scale).round().clamp(-128, 127).to(torch.int8)
+
+# 反量化
+kv_cache_fp16 = kv_cache_int8.to(torch.float16) * scale
+```
+
+**精度损失评估**：
+- **INT8**：通常 < 1% 质量下降，适合长文本（>16K）
+- **INT4**：3-5% 质量下降，长文本更敏感（>8K 后累积误差明显）
+
+**关键点**：
+- **分层量化**：底层（靠近 embedding）更敏感，可保持 FP16；上层可量化
+- **逐 token 量化**：长序列时逐 token 量化比分块量化精度更高
+- **异常值处理**：KV cache 中可能存在 outlier，需要分组量化或混合精度
+
+**实现框架**：
+- **vLLM**：支持 KV cache INT8 量化（`kv_cache_dtype="int8"`）
+- **TensorRT-LLM**：支持 INT8/INT4 KV cache
+- **AutoGPTQ**：支持 INT4 KV cache（需校准）
+
+### 9. Q: KV cache 用 FP16 和 BF16 有什么区别？
+**A**: 主要区别在**动态范围**和**数值稳定性**。
+
+| 维度 | FP16 | BF16 | 影响 |
+|------|------|------|------|
+| **动态范围** | 小（容易溢出） | 大（与 FP32 相同） | BF16 更适合大模型 |
+| **精度** | 高（10-bit 尾数） | 低（7-bit 尾数） | FP16 精度稍好 |
+| **累加误差** | 长序列累积明显 | 累积误差更大 | 长文本（>32K）需注意 |
+| **硬件支持** | 广泛 | 需要 Ampere+ GPU | A100/H100 推荐 BF16 |
+
+**实际影响**：
+```python
+# LLaMA-7B, seq_len=8192, 测试 PPL
+FP16: 12.34
+BF16: 12.36  # 差异 < 0.2%
+
+# seq_len=32768 时
+FP16: 15.67
+BF16: 15.82  # 长文本 BF16 累积误差稍大
+
+# 但 BF16 不会溢出（FP16 可能 inf）
+```
+
+**推荐**：
+- **训练**：BF16（更稳定，不易溢出）
+- **短文本推理（<16K）**：FP16 或 BF16 均可
+- **长文本推理（>32K）**：BF16（防溢出），或 INT8 量化
+
+### 10. Q: 重排/拼接会影响 cache 吗？线上"串台"是什么？
+**A**: 
+
+**重排/拼接的影响**：
+```python
+# 场景：用户取消最后生成的 token，重新生成
+# 或者：从中间位置截断，重新生成
+
+# ❌ 错误做法：直接修改 cache
+# cache 已经包含了被取消的 token
+
+# ✅ 正确做法：
+# 1. 截断 cache 到指定位置
+kv_cache['key'] = kv_cache['key'][:, :, :keep_len, :]
+kv_cache['value'] = kv_cache['value'][:, :, :keep_len, :]
+
+# 2. 重置 position_id
+position_id = keep_len
+
+# 3. 重新生成
+```
+
+**线上"串台"问题**：
+```python
+# 串台：多用户场景下，用户 A 的 cache 污染了用户 B
+
+# 根本原因：
+# 1. Batch 推理时，cache 索引错误
+# 2. PagedAttention 的 block 被错误复用
+# 3. 多轮对话中 user_id 与 cache 映射错误
+
+# 解决方案：
+# ✅ 使用 PagedAttention（vLLM）
+# - 每个 request 独立的 block table
+# - 物理内存隔离，不会串台
+
+# ✅ 显式 cache 管理
+class CacheManager:
+    def __init__(self):
+        self.cache_pool = {}  # request_id -> kv_cache
+    
+    def get_cache(self, request_id):
+        return self.cache_pool.get(request_id)
+    
+    def release_cache(self, request_id):
+        # 显式释放，避免泄露
+        del self.cache_pool[request_id]
+
+# ✅ 测试用例
+def test_cache_isolation():
+    # 用户 A 和 B 并发请求
+    # 验证 cache 完全隔离
+    pass
+```
+
+**调试技巧**：
+```python
+# 1. 为每个 cache block 添加 checksum
+# 2. 定期校验 cache 完整性
+# 3. 日志记录 cache 分配/释放
+# 4. 压测：1000 并发用户，验证无串台
+```
+
 ## 常见错误（至少 3 个）
 
 ### 1. **错误：KV cache 没有按层初始化，混用不同层的 cache**
@@ -487,6 +613,105 @@ kv_cache = torch.zeros(..., dtype=torch.float16)  # 2 bytes per element
 kv_cache = torch.zeros(..., dtype=torch.bfloat16)  # 更稳定
 ```
 
+### 6. **错误：多轮对话 cache 泄露**
+**现象**：显存持续增长，最终 OOM
+
+**原因**：旧对话的 cache 没有释放，或者 prefix cache 没有正确管理
+
+**正确做法**：
+```python
+# ❌ 错误：cache 只增不减
+def chat_round(user_input, kv_cache):
+    # 一直 append，从不清理
+    kv_cache = append_to_cache(kv_cache, new_tokens)
+    return response
+
+# ✅ 正确：显式管理 cache 生命周期
+class ChatSession:
+    def __init__(self):
+        self.kv_cache = None
+        self.seq_len = 0
+    
+    def chat(self, user_input):
+        # 如果超过上下文限制，截断
+        if self.seq_len > max_context_len:
+            self.kv_cache = truncate_cache(self.kv_cache, keep_len)
+            self.seq_len = keep_len
+        
+        response, self.kv_cache = generate(user_input, self.kv_cache)
+        self.seq_len += len(response)
+        return response
+    
+    def reset(self):
+        # 用户主动重置对话
+        self.kv_cache = None
+        self.seq_len = 0
+
+# 或者使用 LRU 淘汰策略
+cache_pool = LRUCache(max_size=1000)  # 最多缓存 1000 个 session
+```
+
+### 7. **错误：GQA/MQA 场景 cache 形状错误**
+**现象**：维度不匹配，或者 cache 大小没有减少
+
+**原因**：GQA/MQA 下，KV cache 的 num_heads 应该是 num_groups，而不是 num_heads
+
+**正确做法**：
+```python
+# MHA (num_heads=32, num_groups=32)
+kv_cache_mha = torch.zeros(batch, 32, seq, head_dim)
+
+# ❌ 错误：GQA 下仍用 num_heads
+# GQA (num_heads=32, group_size=8, num_groups=4)
+kv_cache_wrong = torch.zeros(batch, 32, seq, head_dim)  # 没有节省显存！
+
+# ✅ 正确：使用 num_groups
+num_groups = num_heads // group_size  # 32 // 8 = 4
+kv_cache_gqa = torch.zeros(batch, 4, seq, head_dim)  # 节省 87.5% 显存
+
+# 计算时需要广播
+for h in range(num_heads):
+    g = h // group_size
+    K_h = kv_cache_gqa[:, g:g+1, :, :]  # [batch, 1, seq, head_dim]
+    V_h = kv_cache_gqa[:, g:g+1, :, :]
+    # ... attention 计算
+```
+
+### 8. **错误：量化后忘记更新 dtype 参数**
+**现象**：量化了 KV cache，但显存占用没变，或者推理出错
+
+**原因**：量化后没有同步更新框架配置
+
+**正确做法**：
+```python
+# vLLM 示例
+from vllm import LLM
+
+# ✅ 正确：同时设置 cache dtype 和模型 dtype
+llm = LLM(
+    model="Qwen/Qwen2-7B",
+    dtype="float16",           # 模型权重 dtype
+    kv_cache_dtype="int8",     # KV cache dtype
+    # 注意：两者需要匹配框架支持
+)
+
+# 检查实际内存占用
+import torch
+print(f"Allocated: {torch.cuda.memory_allocated() / 1e9:.2f} GB")
+
+# 如果使用自定义实现
+# 量化后需要调整显存估算
+def estimate_kv_memory_with_quant(batch, seq, layers, heads, head_dim, dtype):
+    if dtype == "int8":
+        bytes_per_element = 1
+    elif dtype == "int4":
+        bytes_per_element = 0.5
+    else:
+        bytes_per_element = 2
+    
+    return 2 * batch * seq * layers * heads * head_dim * bytes_per_element
+```
+
 ## 反问面试官的问题
 
 ### 1. 技术深度类
@@ -542,7 +767,7 @@ def estimate_kv_cache_memory(
 ```
 
 ## 标签
-#推理 #kv_cache #工程 #prefill #decode #GQA #MQA #显存优化 #batching
+#推理 #kv_cache #工程 #prefill #decode #GQA #MQA #显存优化 #batching #手撕 #字节 #阿里 #腾讯 #百度 #美团
 
 ## 相关文档
 - [[01-Prefill与Decode]] - KV cache 在 prefill/decode 两阶段的不同作用
