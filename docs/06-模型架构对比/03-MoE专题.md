@@ -999,8 +999,8 @@ def compute_expert_utilization(top_k_indices, num_experts):
 #MoE #架构 #DeepSeek #训练 #稀疏激活 #负载均衡 #ExpertParallel #阿里 #腾讯 #字节 #美团 #handwrite
 
 ## 相关文档
-- [[01-主流架构共同点]]（计划生成）
-- [[02-Qwen LLaMA DeepSeek对比]]（计划生成）
-- [[../01-Transformer基础/02-Attention机制]]：Attention 基础
-- [[../07-分布式训练ZeRO/03-DeepSpeed ZeRO]]：分布式训练优化
-- [[../09-推理Infra/06-多卡推理TP PP]]：MoE 推理并行策略
+- [[01-主流架构共同点]]
+- [[02-Qwen LLaMA DeepSeek对比]]
+- [[../01-Transformer基础/02-Attention机制]]
+- [[../07-分布式训练ZeRO/03-DeepSpeed ZeRO]]
+- [[../09-推理Infra/06-多卡推理TP PP]]

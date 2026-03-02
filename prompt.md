@@ -39,17 +39,36 @@
 
 **知识库是持续扩充的，必须先检查现有文档质量：**
 
-1. 调用 `document-verifier` subagent，传入：
-   - 任务类型：`full_check`（检查所有 16 个目录）
+1. **逐个目录检查**：对 `docs/` 下的每个子目录，调用 `document-verifier` subagent：
+   - 任务类型：`directory_check`
+   - 目标目录：`docs/{序号}-{主题名}/`（每次只检查一个子目录）
    - 参考模板：`.opencode/agents/write-document.md`
+   
+2. **检查顺序**（按优先级）：
+   - `docs/01-Transformer基础/`
+   - `docs/04-RLHF对齐/`
+   - `docs/09-推理Infra/`
+   - `docs/07-分布式训练ZeRO/`
+   - `docs/05-长上下文/`
+   - `docs/03-SFT与LoRA/`
+   - `docs/10-FlashAttention/`
+   - `docs/08-数值精度量化/`
+   - `docs/06-模型架构对比/`
+   - `docs/02-训练数据流水线/`
+   - `docs/11-评估体系/`
+   - `docs/12-幻觉RAG/`
+   - `docs/13-手撕算法题/`
+   - `docs/14-项目经历/`
+   - `docs/00-约定/`
+   - `docs/15-覆盖索引/`
 
-2. **verifier 必须返回：**
-   - 审查报告：包含通过/失败的文档清单
+3. **每次 verifier 调用必须返回：**
+   - 审查报告：该目录下通过/失败的文档清单
    - 问题清单：每个问题的具体描述和严重程度
    - **修改建议**：针对每个问题的具体修复方案（必填）
-   - 缺失文档清单：overview.md 中有但 docs/ 中缺失的文档
+   - 缺失文档清单：overview.md 中有但该目录下缺失的文档
 
-3. 等待 verifier 返回完整审查报告
+4. **汇总所有目录的审查结果**
 
 ### 第 4 步：根据审查报告执行
 
@@ -86,10 +105,12 @@
 
 **修复完成后，必须重新调用 verifier 验证：**
 
-1. 再次调用 `document-verifier` subagent
+1. 对之前有问题的目录，逐个调用 `document-verifier` subagent：
+   - 任务类型：`directory_check`
+   - 目标目录：`docs/{具体目录}/`
 2. 检查是否所有 Critical 问题已修复
 3. 如果仍有问题，返回第 4 步继续修复
-4. 重复直到通过验收（Critical 级别问题数为 0）
+4. 重复直到通过验收（所有目录的 Critical 级别问题数均为 0）
 
 ### 第 6 步：更新 AGENTS.md
 
