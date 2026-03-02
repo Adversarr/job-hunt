@@ -366,8 +366,8 @@ for epoch in range(num_epochs):
 #PPO #RLHF #RL #训练 #策略梯度 #GAE #advantage_function #handwrite #derive #阿里 #腾讯 #美团
 
 ## 相关文档
-- [[01-RLHF全流程]]
+- [[01-RLHF总览]]
 - [[03-DPO算法]]
 - [[04-GRPO算法]]
-- [[05-奖励模型训练]]
-- [[06-偏好数据设计]]
+- [[05-偏好数据设计]]
+- [[06-奖励黑客]]

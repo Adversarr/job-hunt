@@ -604,7 +604,7 @@ def forward(self, x):
 ```
 
 ## 标签
-#训练 #SFT #LoRA #QLoRA #微调 #参数高效 #量化 #面试八股 #腾讯 #阿里 #百度
+#SFT #int4 #腾讯 #阿里 #百度
 
 ## 相关文档
 - [[01-SFT目标与边界]] - SFT 的作用与 LoRA 的定位

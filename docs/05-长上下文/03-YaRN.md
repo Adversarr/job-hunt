@@ -1059,12 +1059,12 @@ print(f"KV cache 显存: {memory / 1e9:.2f} GB")  # 约 40 GB
 
 ## 标签
 
-#架构 #YaRN #RoPE #长上下文 #位置编码 #外推 #温度缩放 #NTK-aware #滑动窗口 #Qwen #DeepSeek #字节 #阿里 #腾讯 #美团 #推理优化
+#YaRN #RoPE #kv_cache #paged_attention #FlashAttention #字节 #阿里 #腾讯 #美团
 
 ## 相关文档
 
 - [[01-上下文窗口与外推]]：上下文窗口基础概念、外推问题的定义
 - [[02-RoPE体系]]：RoPE 基础原理、频率分量分析、与其他位置编码对比
-- [[04-KV Cache核心]]：长上下文下的显存优化、Paged Attention
-- [[05-Paged Attention]]：超长上下文的显存管理方案
-- [[06-FlashAttention]]：长上下文下的注意力计算优化
+- [[../09-推理Infra/02-KV Cache核心]]：长上下文下的显存优化、Paged Attention
+- [[../09-推理Infra/03-Paged Attention]]：超长上下文的显存管理方案
+- [[../10-FlashAttention/01-FlashAttention原理]]：长上下文下的注意力计算优化

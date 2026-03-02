@@ -675,7 +675,7 @@ model.gradient_checkpointing_enable()
    ```
 
 ## 标签
-#训练 #工程 #ZeRO #DeepSpeed #显存优化 #分布式训练 #LoRA
+#pretrain #SFT #DeepSpeed #ZeRO
 
 ## 相关文档
 - [[01-并行策略总览]] - DP/DDP/TP/PP 基础概念与通信模式

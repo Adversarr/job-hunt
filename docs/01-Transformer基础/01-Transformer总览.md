@@ -482,11 +482,11 @@ def swiglu_ffn(x, w_gate, w_up, w_down):
 ```
 
 ## 标签
-#Transformer #架构 #Decoder-only #Encoder-Decoder #forward链路 #Attention #FFN #RMSNorm #RoPE #Pre-Norm #Post-Norm #阿里 #字节
+#Transformer #MHA #RoPE #字节 #阿里
 
 ## 相关文档
-- [[02-Attention机制详解]]：MHA/MQA/GQA 原理与实现
-- [[03-FFN与SwiGLU]]：FFN 变体与参数设计
-- [[04-位置编码与RoPE]]：RoPE 原理与外推
-- [[06-模型架构对比]]：LLaMA/Qwen/DeepSeek 架构差异
-- [[09-推理与KV Cache]]：推理链路与 cache 优化
+- [[02-Attention机制]]：MHA/MQA/GQA 原理与实现
+- [[03-FFN与归一化]]：FFN 变体与参数设计
+- [[../05-长上下文/02-RoPE体系]]：RoPE 原理与外推
+- [[../06-模型架构对比/02-Qwen LLaMA DeepSeek对比]]：LLaMA/Qwen/DeepSeek 架构差异
+- [[../09-推理Infra/02-KV Cache核心]]：推理链路与 cache 优化

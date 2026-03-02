@@ -975,4 +975,4 @@ accept_prob = torch.where(
 - [[01-Prefill与Decode]] - 理解 decode 阶段的特性和瓶颈
 - [[04-Batching与调度]] - 动态 batching 与 speculative decoding 的协同
 - [[../01-Transformer基础/02-Attention机制]] - Attention 机制与 KV cache 基础
-- [[03-Paged-Attention]] - KV cache 管理与显存优化
+- [[03-Paged Attention]] - KV cache 管理与显存优化

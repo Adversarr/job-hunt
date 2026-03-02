@@ -663,12 +663,12 @@ k = k_no_rope + k_rope
 
 ## 标签
 
-#RoPE #长上下文 #位置编码 #YaRN #MLA #Transformer #架构 #字节 #阿里 #derive #handwrite
+#RoPE #YaRN #MLA #Transformer #kv_cache #paged_attention #derive #handwrite #字节 #阿里
 
 ## 相关文档
 
 - [[01-上下文窗口与外推]] - 上下文窗口扩展的通用方法论
 - [[03-YaRN]] - YaRN 的详细实现与调参
 - [[../01-Transformer基础/02-Attention机制]] - Attention 机制与位置编码的关系
-- [[../06-模型架构对比/03-DeepSeek架构]] - MLA 的详细实现
+- [[../06-模型架构对比/02-Qwen LLaMA DeepSeek对比]] - MLA 的详细实现
 - [[../09-推理Infra/02-KV Cache核心]] - KV cache 与长上下文的显存分析

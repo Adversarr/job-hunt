@@ -438,13 +438,11 @@ def estimate_kv_cache_memory(batch_size, seq_len, num_layers, num_heads, head_di
 ```
 
 ## 标签
-
-#Transformer #MHA #MQA #GQA #Attention #KV_cache #handwrite #derive #阿里 #百度 #字节 #Infra
+#Transformer #MHA #MQA #GQA #kv_cache #handwrite #derive #阿里 #百度 #字节
 
 ## 相关文档
-
-- [[01-Transformer总览]] - Transformer 整体架构与 forward 流程
-- [[03-FFN与Normalization]] - FFN 与 RMSNorm/LayerNorm 细节
-- [[../09-推理与Infra/01-KV-Cache]] - KV cache 详细分析与显存估算
-- [[../09-推理与Infra/02-Paged-Attention]] - vLLM 的 PagedAttention 机制
-- [[../10-FlashAttention/01-FlashAttention原理]] - FlashAttention 的 IO 优化
+- [[01-Transformer总览]]：Transformer 整体架构与 forward 流程
+- [[03-FFN与归一化]]：FFN 与 RMSNorm/LayerNorm 细节
+- [[../09-推理Infra/02-KV Cache核心]]：KV cache 详细分析与显存估算
+- [[../09-推理Infra/03-Paged Attention]]：vLLM 的 PagedAttention 机制
+- [[../10-FlashAttention/01-FlashAttention原理]]：FlashAttention 的 IO 优化

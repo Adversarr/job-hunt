@@ -650,7 +650,7 @@ def format_to_chatml(instruction, input_text, output):
 
 ## 标签
 
-#训练 #SFT #RLHF #对齐 #指令遵循 #风格对齐 #偏好学习 #字节 #腾讯 #阿里
+#pretrain #SFT #DPO #RLHF #字节 #腾讯 #阿里
 
 ## 相关文档
 

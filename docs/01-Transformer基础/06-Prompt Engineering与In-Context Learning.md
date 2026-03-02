@@ -820,11 +820,11 @@ def select_examples(query, example_pool, strategy="similarity", k=5):
 ```
 
 ## 标签
-#Transformer #PromptEngineering #InContextLearning #Few-Shot #Zero-Shot #Fine-Tuning #Attention #序列建模 #阿里
+#Transformer #SFT #handwrite #derive #字节 #阿里
 
 ## 相关文档
-- [[02-Attention机制详解]]：理解注意力机制在 In-Context Learning 中的作用
-- [[01-Tokenizer与Embedding]]：Prompt 的 tokenization 和信息表示
-- [[05-长上下文]]：长 Prompt 的处理和外推
-- [[09-KV Cache核心]]：Few-Shot 示例的 KV cache 复用
-- [[11-评估体系]]：Prompt 效果的评估指标和方法
+- [[02-Attention机制]]：理解注意力机制在 In-Context Learning 中的作用
+- [[04-Tokenizer与Embedding]]：Prompt 的 tokenization 和信息表示
+- [[../05-长上下文/01-上下文窗口与外推]]：长 Prompt 的处理和外推
+- [[../09-推理Infra/02-KV Cache核心]]：Few-Shot 示例的 KV cache 复用
+- [[../11-评估体系/02-生成评估]]：Prompt 效果的评估指标和方法

@@ -354,10 +354,10 @@ print(f"KV cache: {kv_cache_bytes / 1e9:.2f} GB")  # 约 320 GB
 ```
 
 ## 标签
-#FlashAttention #工程 #prefill #decode #paged_attention #长上下文 #推理优化 #HBM #SRAM #online_softmax
+#FlashAttention #prefill #decode #kv_cache #paged_attention #Profiling
 
 ## 相关文档
-- [[01-FlashAttention原理]] - FlashAttention 原理详解
-- [[09-推理Infra/01-Prefill与Decode]] - prefill 与 decode 的差异与优化
-- [[09-推理Infra/03-Paged Attention]] - PagedAttention 原理与实现
-- [[09-推理Infra/02-KV Cache核心]] - KV cache 显存估算与管理
+- [[01-FlashAttention原理]]
+- [[../09-推理Infra/01-Prefill与Decode]]
+- [[../09-推理Infra/03-Paged Attention]]
+- [[../09-推理Infra/02-KV Cache核心]]

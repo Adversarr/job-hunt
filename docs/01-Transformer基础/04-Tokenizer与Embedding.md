@@ -754,12 +754,12 @@ tokenizer.padding_side = "right"  # 分类任务
   ```
 
 ## 标签
-#Transformer #架构 #Tokenizer #Embedding #BPE #SentencePiece #多语言 #字节 #阿里
+#Transformer #字节 #阿里
 
 ## 相关文档
-- [[01-Transformer总览]] - Transformer 整体架构与 forward 流程
-- [[02-Attention机制]] - Attention 层如何接收 embedding 输入
-- [[03-FFN与归一化]] - FFN 层的结构与参数配置
-- [[05-手撕MHA]] - 手写多头注意力实现
-- [[../02-训练数据流水线/01-数据处理全链路]] - Tokenization 在数据预处理中的应用
-- [[../06-模型架构对比/01-Qwen-LLaMA-DeepSeek对比]] - 不同模型的 tokenizer 差异
+- [[01-Transformer总览]]：Transformer 整体架构与 forward 流程
+- [[02-Attention机制]]：Attention 层如何接收 embedding 输入
+- [[03-FFN与归一化]]：FFN 层的结构与参数配置
+- [[05-手撕Transformer组件]]：手写多头注意力实现
+- [[../02-训练数据流水线/01-数据处理全链路]]：Tokenization 在数据预处理中的应用
+- [[../06-模型架构对比/02-Qwen LLaMA DeepSeek对比]]：不同模型的 tokenizer 差异

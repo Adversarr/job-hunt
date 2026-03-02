@@ -456,9 +456,9 @@ output = w3(gate * value)  # 门控后投影回 d_model
 5. 计算给定模型的 FFN 参数量（`d_model=4096, d_ff=11008`）
 
 ## 标签
-#Transformer #架构 #FFN #SwiGLU #RMSNorm #LayerNorm #handwrite #字节 #阿里 #腾讯
+#Transformer #FFN #handwrite #字节 #阿里 #腾讯
 
 ## 相关文档
-- [[01-Transformer总览]]
-- [[02-Attention机制]]
-- [[04-Tokenizer与Embedding]]
+- [[01-Transformer总览]]：Transformer 整体架构与 forward 流程
+- [[02-Attention机制]]：Attention 层的结构与实现
+- [[04-Tokenizer与Embedding]]：Tokenizer 与 Embedding 层配置

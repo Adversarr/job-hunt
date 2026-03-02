@@ -332,10 +332,10 @@ labels = labels[:, 1:]       # 去掉第一个
 - Decoder Layer 的前向传播（伪代码）
 
 ## 标签
-#handwrite #MHA #Transformer #causal_mask #softmax #cross_entropy #手撕 #字节 #腾讯 #阿里
+#handwrite #MHA #Transformer #字节 #腾讯 #阿里
 
 ## 相关文档
-- [[01-Transformer架构总览]]：整体架构与各组件关系
-- [[02-Attention机制详解]]：MHA/MQA/GQA 原理对比
+- [[01-Transformer总览]]：整体架构与各组件关系
+- [[02-Attention机制]]：MHA/MQA/GQA 原理对比
 - [[03-FFN与归一化]]：FFN 结构与 RMSNorm/LayerNorm
-- [[13-手撕算法题库]]：其他手撕题目汇总
+- [[../13-手撕算法题/06-工程手撕题型]]：其他手撕题目汇总

@@ -357,9 +357,9 @@ docs/
 #system_design #handwrite #derive #leetcode
 
 ## 相关文档
-- [[15-覆盖索引/README]] - 问题到文档映射索引，快速定位面试题对应文档
-- [[01-Transformer基础/01-Transformer总览]] - Transformer 架构总览，基础必考章节
-- [[04-RLHF对齐/01-RLHF总览]] - RLHF 对齐方法总览，进阶必考章节
+- [[15-覆盖索引/README.md]] - 问题到文档映射索引，快速定位面试题对应文档
+- [[01-Transformer基础/01-Transformer总览.md]] - Transformer 架构总览，基础必考章节
+- [[04-RLHF对齐/01-RLHF总览.md]] - RLHF 对齐方法总览，进阶必考章节
 
 ---
 

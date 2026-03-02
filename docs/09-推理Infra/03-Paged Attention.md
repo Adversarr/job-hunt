@@ -1093,11 +1093,11 @@ def recommend_block_size(typical_seq_len: int):
 ## 相关文档
 
 - [[02-KV Cache核心]] - KV cache 的基本概念、存储内容、显存估算
-- [[04-Continuous Batching]] - 动态 batching 与 Paged Attention 的协同
+- [[04-Batching与调度]] - 动态 batching 与 Paged Attention 的协同
 - [[05-Speculative Decoding]] - 推理加速技术与 Paged Attention 的组合
-- [[01-Prefill vs Decode]] - 不同阶段的计算特性与优化重点
-- [[../07-分布式训练/03-Tensor Parallel]] - TP 的详细原理与通信开销
-- [[../08-数值精度/02-KV Cache量化]] - KV cache 量化的详细方案与质量评估
+- [[01-Prefill与Decode]] - 不同阶段的计算特性与优化重点
+- [[../07-分布式训练ZeRO/02-通信瓶颈定位]] - TP 的详细原理与通信开销
+- [[../08-数值精度量化/02-推理量化路线]] - KV cache 量化的详细方案与质量评估
 
 ---
 

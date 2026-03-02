@@ -662,12 +662,11 @@ BLOCK_SIZE = min(128, 96000 // (4 * d + 4))
    ```
 
 ## 标签
-
-#FlashAttention #工程 #Attention #prefill #decode #HBM #SRAM #online_softmax #blockwise #kernel优化 #字节 #阿里 #Infra #handwrite #derive
+#FlashAttention #prefill #decode #handwrite #derive #字节 #阿里 #Profiling
 
 ## 相关文档
-- [[02-FlashAttention工程]] - FlashAttention 的工程实现与调优
-- [[../01-Transformer基础/02-Attention机制]] - Attention 基础：MHA/MQA/GQA
-- [[../09-推理Infra/01-Prefill与Decode]] - Prefill 与 Decode 阶段的性能差异
-- [[../09-推理Infra/03-Paged Attention]] - PagedAttention 与 FlashAttention 的配合
-- [[../07-分布式训练ZeRO/02-通信瓶颈定位]] - GPU 内存层级与带宽瓶颈分析
+- [[02-FlashAttention工程]]
+- [[../01-Transformer基础/02-Attention机制]]
+- [[../09-推理Infra/01-Prefill与Decode]]
+- [[../09-推理Infra/03-Paged Attention]]
+- [[../07-分布式训练ZeRO/02-通信瓶颈定位]]
