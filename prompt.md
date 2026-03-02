@@ -24,12 +24,14 @@
 ### 第 3 步：逐个调用 write-document subagent
 
 对每个文档主题：
-1. 调用 `write-document` subagent，传入：
+1. 识别相关代码仓库：根据主题确定需要审查的 `ref-code/` 子模块（OLMo-core, open-instruct, SERA, olmocr, RL4LMs）
+2. 调用 `write-document` subagent，传入：
    - 主题名称和子主题
    - 相关的面试问题（从 questions.md 匹配）
+   - 需要审查的代码仓库列表
    - 参考模板（`.opencode/agents/write-document.md`）
-2. 等待完成后再处理下一个
-3. 如果文档已经存在，*必须*调用subagent，基于当前知识库内容进行迭代更新补充。作为协调者，不能偷懒，严格执行。
+3. 等待完成后再处理下一个
+4. 如果文档已经存在，*必须*调用subagent，基于当前知识库内容进行迭代更新补充。作为协调者，不能偷懒，严格执行。
 
 ### 第 4 步：更新 AGENTS.md
 
@@ -67,6 +69,7 @@ git commit -m "docs: 完成 LLM 面试知识库构建"
 ## 注意事项
 
 - 每个文档必须遵循 `.opencode/agents/write-document.md` 中的模板
+- **必须**审查 `ref-code/` 目录下的相关代码，确保技术细节准确
 - 标签体系必须严格执行（#训练 #架构 #工程 #推理 #数值 #题型）
 - 文档间必须添加交叉引用
 - 确保"一句话结论"能在 15 秒内口述完成
@@ -77,6 +80,7 @@ git commit -m "docs: 完成 LLM 面试知识库构建"
 - [ ] 15 章主题域全部覆盖
 - [ ] 所有 questions.md 问题都有映射文档
 - [ ] 每个文档遵循统一模板
+- [ ] **每个文档已审查 ref-code/ 相关代码**
 - [ ] 标签体系完整
 - [ ] 文档间有交叉引用
 - [ ] Git commit 完成
