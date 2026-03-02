@@ -1001,6 +1001,6 @@ def compute_expert_utilization(top_k_indices, num_experts):
 ## 相关文档
 - [[01-主流架构共同点]]
 - [[02-Qwen LLaMA DeepSeek对比]]
-- [[../01-Transformer基础/02-Attention机制]]
-- [[../07-分布式训练ZeRO/03-DeepSpeed ZeRO]]
-- [[../09-推理Infra/06-多卡推理TP PP]]
+- [[01-Transformer基础/02-Attention机制]]
+- [[07-分布式训练ZeRO/03-DeepSpeed ZeRO]]
+- [[09-推理Infra/06-多卡推理TP PP]]

@@ -1001,7 +1001,7 @@ tokenizer.padding_side = "left"  # 生成任务
   ```
 
 ## 标签
-#训练 #tokenizer #数据处理 #SFT #padding #packing #loss_mask #BPE #DeepSeek #多轮对话 #字节 #阿里
+#SFT #字节 #阿里
 
 ## 相关文档
 - [[01-数据处理全链路]] - 数据清洗、格式化与 tokenization 在预处理中的应用

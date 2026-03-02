@@ -354,7 +354,7 @@ docs/
 - **手写**：5 分钟能写出标签体系的完整分类，以及任意一个主题的标准文档结构
 
 ## 标签
-#system_design
+#system_design #handwrite #derive #leetcode
 
 ## 相关文档
 - [[15-覆盖索引/README]] - 问题到文档映射索引，快速定位面试题对应文档

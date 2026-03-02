@@ -1129,13 +1129,12 @@ relative_cost = active_params / 70  # 0.53 (节省 47%)
 #架构 #Qwen #LLaMA #DeepSeek #MoE #MLA #GQA #GRPO #RoPE #YaRN #长上下文 #推理效率 #Tokenizer #中文优化 #阿里 #字节 #百度 #腾讯
 
 ## 相关文档
-
-- [[01-主流架构共同点]] - Decoder-only + RMSNorm + SwiGLU + RoPE 的统一趋势
-- [[03-MoE专题]] - MoE 原理、训练难点、DeepSeekMoE 创新点
-- [[../01-Transformer基础/02-Attention机制]] - MHA / MQA / GQA / MLA 详解
-- [[../04-RLHF对齐/04-GRPO算法]] - DeepSeek 选择 GRPO 的原因
-- [[../05-长上下文/03-YaRN]] - Qwen 长上下文扩展方案
-- [[../01-Transformer基础/04-Tokenizer与Embedding]] - Tokenizer 对比与选择
+- [[01-主流架构共同点]]
+- [[03-MoE专题]]
+- [[01-Transformer基础/02-Attention机制]]
+- [[04-RLHF对齐/04-GRPO算法]]
+- [[05-长上下文/03-YaRN]]
+- [[01-Transformer基础/04-Tokenizer与Embedding]]
 
 ---
 
