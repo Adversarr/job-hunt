@@ -1,7 +1,7 @@
 # LoRA / Adapter 原理与实践
 
 ## 一句话结论
-LoRA 通过低秩分解将权重更新 ΔW = BA 近似,只训练两个小矩阵(A、B),显存降低 60%+,参数量仅为全参的 0.1%~3%,性能接近全参微调,是 SFT 的首选高效微调方案。
+LoRA 通过低秩分解将权重更新 ΔW = BA 近似,只训练两个小矩阵(A、B),显存显著降低（当优化器状态占主导时），参数量仅为全参的 0.1%~3%,性能接近全参微调,是目前最常用的 PEFT 方案之一。
 
 ## 核心定义/公式
 
@@ -19,7 +19,10 @@ h = W₀x + ΔWx = W₀x + BAx
 ```
 全参: |W| = d × k
 LoRA: |A| + |B| = r × (d + k)
-压缩比 = (d × k) / (r × (d + k)) ≈ d/r 或 k/r (取小值)
+压缩比 = (d × k) / (r × (d + k)) = dk / (r(d+k))
+
+当 d ≈ k 时：压缩比 ≈ d/(2r)
+当 d >> k 或 k >> d 时：压缩比 ≈ min(d,k) / r
 ```
 
 ### QLoRA 核心配置
@@ -48,24 +51,25 @@ lora_config = LoraConfig(
 全参微调(7B):
   参数: 14GB (FP16)
   梯度: 14GB
-  优化器状态: 28GB (Adam, 2个状态)
-  激活: ~10GB (batch=1, seq=2048)
-  总计: ~66GB
+  优化器状态: 84GB (AdamW, m+v+param_master in FP32)
+  激活: ~10-20GB (batch=4, seq=2048)
+  总计: ~120-140GB (需 ZeRO 切分)
 
 LoRA(7B, r=16):
   参数: 14GB (冻结,可卸载到CPU)
-  LoRA参数: ~4MB (r=16, target=所有层)
-  梯度: ~4MB
-  优化器状态: ~8MB
-  激活: ~10GB
-  总计: ~10GB (不含冻结权重) / ~24GB (含冻结权重)
+  LoRA参数: ~26MB (论文示例，实际随配置变化)
+  梯度+优化器: ~0.3GB
+  激活: ~10-20GB
+  总计: ~25-35GB (含冻结权重)
 
 QLoRA(7B):
-  基座权重: 3.5GB (INT4)
-  LoRA参数: ~4MB
-  梯度+优化器: ~12MB
-  激活: ~10GB
-  总计: ~13.5GB
+  基座权重: ~5GB (4-bit，含量化常数/元数据，论文示例：5048MB)
+  LoRA参数: ~26MB
+  梯度+优化器: ~0.3GB
+  激活: ~10-20GB
+  总计: ~15-25GB
+
+注：QLoRA 论文强调，LoRA 参数本身很小，显存更多来自 activation/其梯度
 ```
 
 ## 为什么（2-3 个因果链）
@@ -80,25 +84,26 @@ QLoRA(7B):
 - 大模型过度参数化,实际只需调整少数关键方向
 
 **实验证据**:
-- LoRA 论文:r=1 在 GPT-2 上已达全参 90% 性能
-- r=4~16 通常足够,r>64 收益递减
+- LoRA 论文：GPT-2 Medium 的最优 rank 在 4~16 之间；rank=1 时指标明显低于更合适的 rank
+- GPT-3 某些任务上 rank=1 也能竞争（特定实验设定）
+- 经验值：r=4~16 通常足够,r>64 收益递减
 
-### 2. 为什么只放在 QKV/O/FFN 矩阵?
+### 2. 为什么优先在 QKV/O/FFN 矩阵应用 LoRA?
 
-**因果链**: Attention 层是知识迁移的核心 → QKV 决定注意力模式,O 决定输出表示 → FFN 存储前馈知识 → 这些层的权重更新对下游任务最敏感
+**因果链**: Attention 层是知识迁移的核心 → QKV 决定注意力模式,O 决定输出表示 → FFN 存储前馈知识 → 这些层的权重更新对下游任务通常最敏感
 
-**实验观察**:
-- QKV 投影矩阵贡献最大:控制"看哪里"和"看什么"
+**经验观察**:
+- QKV 投影矩阵贡献较大:控制"看哪里"和"看什么"
 - FFN 次之:存储领域知识(事实、模式)
 - Embedding 层通常不微调:词汇表变化小
 - LayerNorm 不加 LoRA:参数量太小,全参更简单
 
-**性能对比**:
+**性能对比**（经验值，不同架构会有差异）:
 ```python
-# 只加 QKV: 性能 ~85% 全参
-# QKV + O: 性能 ~92% 全参
-# QKV + O + FFN: 性能 ~98% 全参
-# 全部层: 性能 ~99% 全参,但参数多
+# 只加 QKV: 性能相对较低
+# QKV + O: 性能有所提升
+# QKV + O + FFN: 性能接近全参
+# 全部层: 性能最优，但参数多
 ```
 
 ### 3. 为什么 QLoRA 能训得动?
@@ -221,13 +226,14 @@ model.save_pretrained("./lora_adapter")
 
 #### alpha 选择
 ```
-推荐: alpha = 2 × r
+常用起点: alpha 与 r 同量级（例如 1–4×r）
 
-原因:
-- alpha/r 控制学习率的有效缩放
-- alpha = 2r → 缩放因子 = 2,接近全参更新幅度
-- alpha = r → 缩放因子 = 1,更新幅度过小
-- alpha = 4r → 缩放因子 = 4,可能不稳定
+示例:
+- alpha = r   → 缩放因子 = 1
+- alpha = 2r  → 缩放因子 = 2 (常用)
+- alpha = 4r  → 缩放因子 = 4
+
+建议: alpha = 2 × r 是常用起点，需根据数据规模和过拟合情况调整
 ```
 
 #### dropout 选择
@@ -257,13 +263,12 @@ model.save_pretrained("./lora_adapter")
 
 #### learning rate 选择
 ```
-推荐: 1e-4 ~ 5e-4
+常用起点: 1e-4 ~ 5e-4（相对全参微调大很多）
 
-原因:
-- LoRA 只训练部分参数,学习率可以比全参(5e-6 ~ 1e-5)大 10~50 倍
-- 太小(1e-5): 收敛慢,可能欠拟合
-- 太大(1e-3): 不稳定,可能过拟合
-- 最佳实践: 2e-4 (QLoRA 论文默认值)
+说明:
+- LoRA 只训练部分参数,学习率可以比全参(5e-6 ~ 1e-5)大
+- 具体值需看数据规模与是否过拟合
+- 示例: 2e-4 是常用起点（QLoRA 论文用过）
 ```
 
 ### 代码示例
@@ -537,22 +542,27 @@ assert similar(test_output, merged_output, threshold=0.99)
 - 配置错误: alpha/r 计算错误导致输出偏移
 - 兼容性问题: 不同框架合并实现不同
 
-### 5. 错误: LoRA 和 DeepSpeed ZeRO-3 配合不当
+### 5. 错误: LoRA 和 DeepSpeed ZeRO 配合选择不当
 **正确做法**:
 ```python
-# 错误: ZeRO-3 切分所有参数,LoRA 无法工作
-zero_optimization = {"stage": 3}
-
-# 正确: ZeRO-2 + LoRA
+# 常用配置: ZeRO-2 + LoRA
 zero_optimization = {
-    "stage": 2,  # 只切分优化器状态
+    "stage": 2,  # 切分优化器状态+梯度
     "offload_optimizer": {"device": "cpu"}  # 可选卸载
 }
+
+# 也可以: ZeRO-3 + LoRA（PEFT 支持）
+zero_optimization = {
+    "stage": 3,  # 会引入额外通信，但可用
+    "offload_optimizer": {"device": "none"},
+    "overlap_comm": true
+}
 ```
-**原因**:
-- ZeRO-3 会切分模型参数: LoRA 的 A/B 矩阵会被分散到多卡
-- 通信开销大: 每次前向都需要 all-gather
-- LoRA 参数本来就小: ZeRO-2 足够
+**说明**:
+- **PEFT + DeepSpeed ZeRO-3 是支持的**（Hugging Face PEFT 文档有指南）
+- ZeRO-3 会切分模型参数，引入保存/聚合权重等工程细节与额外通信
+- LoRA 参数本来就小，ZeRO-2 通常足够
+- 选择建议：优先用 ZeRO-2，显存极紧时才考虑 ZeRO-3
 
 ## 反问面试官的问题
 
@@ -584,8 +594,8 @@ def forward(self, x):
     original_output = self.base_layer(x)
     # LoRA 输出
     lora_output = (self.dropout(x) @ self.lora_A.T) @ self.lora_B.T
-    # 合并
-    return original_output + lora_output * (self.scaling / self.r)
+    # 合并（scaling = alpha / r，已在初始化时计算）
+    return original_output + lora_output * self.scaling
 ```
 
 - 能推导 LoRA 的参数量公式
