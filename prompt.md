@@ -29,6 +29,7 @@
    - 相关的面试问题（从 questions.md 匹配）
    - 参考模板（`.opencode/agents/write-document.md`）
 2. 等待完成后再处理下一个
+3. 如果文档已经存在，*必须*调用subagent，基于当前知识库内容进行迭代更新补充。作为协调者，不能偷懒，严格执行。
 
 ### 第 4 步：更新 AGENTS.md
 
