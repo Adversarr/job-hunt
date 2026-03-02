@@ -1,0 +1,15 @@
+[submodule "ref-code/SERA"]
+	path = ref-code/SERA
+	url = https://github.com/allenai/SERA.git
+[submodule "ref-code/RL4LMs"]
+	path = ref-code/RL4LMs
+	url = https://github.com/allenai/RL4LMs.git
+[submodule "ref-code/OLMo-core"]
+	path = ref-code/OLMo-core
+	url = https://github.com/allenai/OLMo-core.git
+[submodule "ref-code/open-instruct"]
+	path = ref-code/open-instruct
+	url = https://github.com/allenai/open-instruct.git
+[submodule "ref-code/olmocr"]
+	path = ref-code/olmocr
+	url = https://github.com/allenai/olmocr.git

@@ -18,6 +18,7 @@ tools:
 - **章节归属**：如 "第 1 章：Transformer 与基础组件"
 - **相关问题**：从 questions.md 匹配的真实面试问题
 - **子主题列表**：需要覆盖的知识点
+- **参考代码**：`ref-code/` 目录下的相关开源实现（OLMo-core, open-instruct, SERA, olmocr, RL4LMs）
 
 ## 输出
 
@@ -107,6 +108,41 @@ tools:
 
 ## 内容要求
 
+### 代码审查要求（强制执行）
+
+在撰写文档前，**必须**查阅 `ref-code/` 目录下的相关开源项目代码：
+
+#### 可用的 Code Map（已生成）
+| 项目 | Code Map | 主要内容 |
+|------|----------|----------|
+| **OLMo-core** | `ref-code/OLMo-core.md` | 模型训练、分布式策略、优化器实现、Transformer/MoE/nGPT 架构 |
+| **open-instruct** | `ref-code/open-instruct.md` | SFT、DPO、GRPO/RLVR 训练、数据处理、验证器系统 |
+| **SERA** | `ref-code/SERA.md` | 合成代码修复数据生成、蒸馏、后处理、训练 |
+| **olmocr** | `ref-code/olmocr.md` | OCR 流水线、SFT/GRPO 训练、vLLM 推理 |
+| **RL4LMs** | `ref-code/RL4LMs.md` | RL 训练 (PPO/NLPO/A2C/TRPO)、奖励函数、策略类 |
+
+#### 审查范围
+- **OLMo-core**: 模型训练、分布式策略、优化器实现
+- **open-instruct**: SFT、DPO、PPO 训练实现
+- **SERA**: 奖励模型、对齐算法
+- **olmocr**: OCR、文档处理
+- **RL4LMs**: RL 训练、PPO 实现
+
+#### 审查流程
+1. **识别相关模块**：根据文档主题确定需要审查的代码仓库
+2. **查阅 Code Map**：首先阅读 `ref-code/{project}.md` 获取项目整体架构和关键文件位置
+3. **查找核心实现**：定位关键算法、配置、API 的源码位置
+4. **提取工程细节**：记录参数默认值、边界处理、性能优化技巧
+5. **验证技术细节**：确保文档中的公式、配置与代码实现一致
+6. **引用代码路径**：在文档中标注参考的源码位置（如 `ref-code/OLMo-core/src/olmo_core/nn/attention.py:156`）
+
+#### 输出要求
+- 每个技术细节必须有代码支撑或权威论文引用
+- 配置参数必须给出具体的代码出处
+- 算法实现必须标注参考的源码文件
+
+---
+
 ### 精确性
 - 公式必须正确，变量定义清晰
 - 代码可直接运行，参数有依据
@@ -144,3 +180,4 @@ tools:
 - [ ] 标签体系完整
 - [ ] 至少 2 个相关文档引用
 - [ ] 代码示例可直接运行
+- [ ] **已审查 ref-code/ 相关代码，技术细节有代码支撑**
